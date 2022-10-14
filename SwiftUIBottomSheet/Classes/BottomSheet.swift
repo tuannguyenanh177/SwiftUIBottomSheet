@@ -30,7 +30,8 @@ public struct BottomSheetConfig {
                 handlePosition: HandlePosition = .inside,
                 topBarCornerRadius: CGFloat? = nil,
                 sizeChangeRequest: Binding<CGFloat> = .constant(0),
-                isIgnoreKeyboardInset: Bool = false) {
+                isIgnoreKeyboardInset: Bool = false,
+                animation: Animation = .interactiveSpring()) {
         self.maxHeight = maxHeight
         self.kind = kind
         self.overlayColor = overlayColor
@@ -41,6 +42,7 @@ public struct BottomSheetConfig {
         self.topBarCornerRadius = topBarCornerRadius
         self.sizeChangeRequest = sizeChangeRequest
         self.isIgnoreKeyboardInset = isIgnoreKeyboardInset
+        self.animation = animation
     }
 
     public enum Kind: Int, CaseIterable, Equatable {
@@ -66,6 +68,7 @@ public struct BottomSheetConfig {
     public var topBarCornerRadius: CGFloat?
     public var sizeChangeRequest: Binding<CGFloat>
     public var isIgnoreKeyboardInset: Bool
+    public var animation: Animation
 }
 
 public extension BottomSheetConfig {
@@ -249,9 +252,9 @@ private struct BottomSheetContainer<Content: View>: View {
             }
         }
         .offset(y: offset)
-        .animation(shown ? .interactiveSpring() : nil, value: height)
-        .animation(.interactiveSpring(), value: dragEnded)
-        .animation(.interactiveSpring(), value: config.handlePosition)
+        .animation(shown ? config.animation : nil, value: height)
+        .animation(config.animation, value: dragEnded)
+        .animation(config.animation, value: config.handlePosition)
         .transaction {
             if dragStart != nil {
                 $0.animation = .interactiveSpring()
